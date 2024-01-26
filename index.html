@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+    <meta charset="utf-8"/>
+    <title>MCR</title>
+    <style>
+        /* Global styles */
+        body {
+            background-color: #222;
+            color: #fff;
+            font-family: "Source Sans Pro", sans-serif;
+            font-size: 1.3em;
+        }
+
+        /* Form styles */
+        form {
+            margin: 20px;
+        }
+
+        textarea,
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            background-color: #333;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            padding: 5px;
+            width: 100%;
+            margin: 0;
+            font-family: "Iosevka SS09", "Iosevka Slab", "Source Code Pro", "monospace";
+        }
+
+        button {
+            background-color: #555;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #777;
+        }
+
+        button:active {
+            background-color: #444;
+        }
+
+    </style>
+    <style>
+        .mono {
+            font-family: monospace;
+        }
+
+        .container0 {
+            /*height           : 100%;*/
+            /*width            : 100%;*/
+            /*background-color : pink;*/
+            display: flex;
+            align-items: stretch;
+            flex-direction: column;
+            gap: 1mm;
+            position: absolute;
+            top: 5mm;
+            left: 5mm;
+            right: 5mm;
+            bottom: 5mm;
+            margin: 0;
+        }
+
+        .container1 {
+            width: 100%;
+            gap: 1mm;
+            display: flex;
+            align-items: baseline;
+            flex-direction: row;
+        }
+
+        .container11 {
+            height: 100%;
+            /*width          : 100%;*/
+            gap: 1mm;
+            display: flex;
+            align-items: stretch;
+            flex-direction: row;
+        }
+
+        .container1 input {
+            width: 100%;
+        }
+
+        .container11 textarea {
+            /*display : block;*/
+            /*height  : 100%;*/
+            /*width   : 100%;*/
+        }
+
+        .nowrap{
+            white-space: nowrap;
+        }
+    </style>
+
+</head>
+<body>
+<div class="container0">
+    <div class="container1 mono nowrap" title="enter command line and press [Enter] to evaluate">
+        mcr
+        <input class="mono" disabled="disabled" type="text" id="txt_cli">
+        &lAarr; [Enter]
+    </div>
+    <div class="container11">
+        <textarea disabled="disabled" id="txt_in"></textarea>
+        <button title="evaluate" disabled="disabled" id="btn_do">&rArr;</button>
+        <textarea disabled="disabled" id="txt_out"></textarea>
+    </div>
+</div>
+<script type="module">
+    import init, {do_conversion, do_init} from "./pkg/mcrweb.js";
+
+    let elem_cli = document.getElementById("txt_cli");
+    let elem_in = document.getElementById("txt_in");
+    let elem_out = document.getElementById("txt_out");
+    let btn_do = document.getElementById("btn_do");
+
+    let fn_enter = function (_evt) {
+        let a = Date.now();
+        let converted = do_conversion(elem_cli.value, elem_in.value);
+        let b = Date.now();
+        let duration = (b - a) / 1000;
+        console.info(`conversion time (${elem_in.value.length} -> ${converted.length}): ${duration}s`)
+        elem_out.value = converted;
+    };
+
+    init().then(() => {
+        do_init("info");
+        elem_cli.disabled = false;
+        elem_in.disabled = false;
+        elem_out.disabled = false;
+        btn_do.disabled = false;
+        btn_do.onclick = fn_enter;
+        elem_cli.onkeyup = function (evt) {
+            if (evt.key == "Enter") {
+                fn_enter();
+            }
+        }
+        console.log("focusing...");
+        elem_cli.focus();
+    });
+
+
+</script>
+</body>
+</html>
