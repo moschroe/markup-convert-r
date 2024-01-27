@@ -134,27 +134,21 @@
     };
 
     let fn_hash_load = function () {
-        // console.debug("AAAAAA");
         let hash = document.location.hash;
-        // console.debug(hash);
         if (hash.length > 1) {
             let urlParams = new URLSearchParams(hash.slice(1));
             let cmd = urlParams.get('cmd');
             let code = urlParams.get('code');
-            // console.info(`cmd: [${cmd}]`);
-            // console.info(`code: [${code}]`);
             elem_cli.value = cmd;
             elem_in.value = code;
         }
     };
 
     let fn_hash_save = function () {
-        // document.location.hash="#?" + evt.target.value;
         let urlParams = new URLSearchParams(window.location.search);
         urlParams.set("cmd", elem_cli.value);
         urlParams.set("code", elem_in.value);
         let replacement = "#?" + urlParams.toString();
-        // console.debug(replacement);
         window.history.replaceState(null, "", replacement)
     };
 
@@ -177,24 +171,10 @@
         console.log("focusing...");
         elem_cli.focus();
         let hash = document.location.hash;
-        if (document.location.hash) {
-            // if (hash.slice(0, 2) == "#?") {
-            //     let hashtail = decodeURIComponent(hash.slice(2));
-            //     elem_cli.value = hashtail;
-            //     fn_enter();
-            // }
-            // if (length > 1){
-            //     let urlParams = new URLSearchParams(window.location.search);
-            //     let myParam = urlParams.get('myParam');
-            // }
-        }
         window.addEventListener("popstate", (event) => {
-            // console.warn("POP");
-            // console.info(
-            //     `location: ${document.location.hash}, state: ${JSON.stringify(event.state)}`,
-            // );
             fn_hash_load();
         });
+        fn_hash_load();
     });
 
 
