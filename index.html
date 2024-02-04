@@ -118,6 +118,7 @@
 </div>
 <script type="module">
     import init, {do_conversion, do_init} from "./pkg/mcrweb.js";
+    import init, {do_conversion, do_init, compress_string, decompress_string} from "./pkg/mcrweb.js";
 
     let elem_cli = document.getElementById("txt_cli");
     let elem_in = document.getElementById("txt_in");
@@ -131,12 +132,20 @@
         let duration = (b - a) / 1000;
         console.info(`conversion time (${elem_in.value.length} -> ${converted.length}): ${duration}s`)
         elem_out.value = converted;
+        window.setTimeout(fn_hash_save, 1);
     };
 
     let fn_hash_load = function () {
         let hash = document.location.hash;
-        if (hash.length > 1) {
-            let urlParams = new URLSearchParams(hash.slice(1));
+        if (hash.length > 2) {
+            let params_str = hash.slice(2)
+            let a = Date.now();
+            let params_str_decomp = decompress_string(params_str);
+            let b = Date.now();
+            let duration = (b - a) / 1000;
+            let ratio = Math.round((params_str_decomp.length / params_str.length) * 10000) / 100;
+            console.debug(`decompressed; ${params_str.length} => ${params_str_decomp.length} (${ratio} %; ${duration}s)`);
+            let urlParams = new URLSearchParams(params_str_decomp);
             let cmd = urlParams.get('cmd');
             let code = urlParams.get('code');
             elem_cli.value = cmd;
@@ -148,7 +157,14 @@
         let urlParams = new URLSearchParams(window.location.search);
         urlParams.set("cmd", elem_cli.value);
         urlParams.set("code", elem_in.value);
-        let replacement = "#?" + urlParams.toString();
+        let params_str = urlParams.toString();
+        let a = Date.now();
+        let params_str_comp = compress_string(params_str);
+        let b = Date.now();
+        let duration = (b - a) / 1000;
+        let ratio = Math.round((params_str_comp.length / params_str.length) * 10000) / 100;
+        console.debug(`compressed; ${params_str.length} => ${params_str_comp.length} (${ratio} %; ${duration}s)`)
+        let replacement = "#?" + params_str_comp;
         window.history.replaceState(null, "", replacement)
     };
 
